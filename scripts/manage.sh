@@ -38,6 +38,7 @@ show_usage() {
     echo "  traefik   - Traefik reverse proxy"
     echo "  cloudflared - Cloudflare tunnel"
     echo "  n8n       - n8n automation"
+    echo "  watchtower - Container auto-updater"
     echo ""
     echo "Examples:"
     echo "  $SCRIPT_NAME start all"
@@ -79,7 +80,7 @@ start_services() {
             start_service "cloudflared"
             show_tunnel_url
             ;;
-        "traefik"|"n8n"|"cloudflared")
+        "traefik"|"n8n"|"cloudflared"|"watchtower")
             start_service "$service"
             if [ "$service" = "cloudflared" ]; then
                 show_tunnel_url
@@ -108,6 +109,9 @@ start_service() {
         "cloudflared")
             service_path="$SERVICES_DIR/proxy/cloudflared"
             ;;
+        "watchtower")
+            service_path="$SERVICES_DIR/maintenance/watchtower"
+            ;;
     esac
     
     if [ -d "$service_path" ]; then
@@ -127,6 +131,7 @@ stop_services() {
     case $service in
         "all")
             print_color $BLUE "Stopping all services..."
+            stop_service "watchtower"
             stop_service "cloudflared"
             stop_service "n8n"
             stop_service "traefik"
@@ -135,7 +140,7 @@ stop_services() {
             stop_service "cloudflared"
             stop_service "traefik"
             ;;
-        "traefik"|"n8n"|"cloudflared")
+        "traefik"|"n8n"|"cloudflared"|"watchtower")
             stop_service "$service"
             ;;
         *)
@@ -161,6 +166,9 @@ stop_service() {
         "cloudflared")
             service_path="$SERVICES_DIR/proxy/cloudflared"
             ;;
+        "watchtower")
+            service_path="$SERVICES_DIR/maintenance/watchtower"
+            ;;
     esac
     
     if [ -d "$service_path" ]; then
@@ -176,7 +184,7 @@ stop_service() {
 # Show service status
 show_status() {
     print_color $BLUE "Service Status:"
-    docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" | grep -E "(traefik|n8n|cloudflared)" || print_color $YELLOW "No services running"
+    docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" | grep -E "(traefik|n8n|cloudflared|watchtower)" || print_color $YELLOW "No services running"
 }
 
 # Show logs
@@ -193,6 +201,9 @@ show_logs() {
             ;;
         "cloudflared")
             container_name="cloudflared-tunnel"
+            ;;
+        "watchtower")
+            container_name="watchtower"
             ;;
         *)
             print_color $RED "Unknown service: $service"
@@ -226,8 +237,9 @@ update_services() {
             update_service "traefik"
             update_service "n8n"
             update_service "cloudflared"
+            update_service "watchtower"
             ;;
-        "traefik"|"n8n"|"cloudflared")
+        "traefik"|"n8n"|"cloudflared"|"watchtower")
             update_service "$service"
             ;;
         *)
@@ -252,6 +264,9 @@ update_service() {
             ;;
         "cloudflared")
             service_path="$SERVICES_DIR/proxy/cloudflared"
+            ;;
+        "watchtower")
+            service_path="$SERVICES_DIR/maintenance/watchtower"
             ;;
     esac
     

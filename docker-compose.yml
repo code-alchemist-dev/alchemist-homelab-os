@@ -42,6 +42,18 @@ services:
       - "homelab.service=n8n"
       - "homelab.category=automation"
       - "homelab.description=Workflow automation platform"
+      - "com.centurylinklabs.watchtower.enable=true"
+
+  # === WATCHTOWER AUTO-UPDATER ===
+  watchtower:
+    extends:
+      file: ./services/maintenance/watchtower/docker-compose.yml
+      service: watchtower
+    labels:
+      - "homelab.service=watchtower"
+      - "homelab.category=maintenance"
+      - "homelab.description=Automatic container updates"
+      - "com.centurylinklabs.watchtower.enable=true"
 
 networks:
   web:
