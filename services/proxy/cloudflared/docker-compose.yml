@@ -1,0 +1,12 @@
+services:
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflared-tunnel
+    command: tunnel --url http://traefik:80
+    networks:
+      - web
+    restart: unless-stopped
+
+networks:
+  web:
+    external: true
