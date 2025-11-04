@@ -86,6 +86,9 @@ start_service() {
         "n8n")
             service_path="$SERVICES_DIR/automation/n8n"
             ;;
+        "watchtower")
+            service_path="$SERVICES_DIR/maintenance/watchtower"
+            ;;
         *)
             print_color $RED "❌ Unknown service: $service_name"
             return 1
@@ -252,10 +255,20 @@ main() {
     start_service "n8n"
     wait_for_service "n8n" 30
     
+    # Step 5: Start Watchtower for auto-updates
+    start_service "watchtower"
+    wait_for_service "watchtower" 15
+    
     # Final status
     show_access_info "$tunnel_url"
     
     print_color $GREEN "🎊 All services are running with proper dependencies!"
+    
+    # Offer to start tunnel monitoring
+    echo ""
+    print_color $YELLOW "💡 Pro Tip: Start tunnel monitoring to auto-update n8n when Cloudflare URL changes:"
+    print_color $CYAN "   ./scripts/tunnel-monitor.sh monitor &"
+    print_color $CYAN "   # Or run in background: nohup ./scripts/tunnel-monitor.sh monitor > /dev/null 2>&1 &"
 }
 
 # Handle command line arguments
@@ -277,7 +290,7 @@ case "${1:-start}" in
         ;;
     "status")
         print_color $BLUE "📊 Service Status:"
-        docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" | grep -E "(traefik|cloudflared|n8n)" || echo "No services running"
+        docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" | grep -E "(traefik|cloudflared|n8n|watchtower)" || echo "No services running"
         ;;
     "url")
         tunnel_url=$(get_tunnel_url)
