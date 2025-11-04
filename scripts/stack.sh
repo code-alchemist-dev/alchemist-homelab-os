@@ -89,6 +89,9 @@ start_service() {
         "watchtower")
             service_path="$SERVICES_DIR/maintenance/watchtower"
             ;;
+        "monitoring")
+            service_path="$SERVICES_DIR/monitoring/grafana-stack"
+            ;;
         *)
             print_color $RED "❌ Unknown service: $service_name"
             return 1
@@ -221,6 +224,8 @@ show_access_info() {
     print_color $CYAN "   • n8n (Local):      http://localhost"
     print_color $CYAN "   • n8n (External):   $tunnel_url"
     print_color $CYAN "   • Traefik Dashboard: http://localhost:8080"
+    print_color $CYAN "   • Grafana Dashboard: http://localhost:3000"
+    print_color $CYAN "   • Prometheus:       http://localhost:9090"
     echo ""
     print_color $YELLOW "📊 Service Status:"
     docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" | grep -E "(traefik|cloudflared|n8n)" || echo "   No services running"
@@ -259,6 +264,10 @@ main() {
     start_service "watchtower"
     wait_for_service "watchtower" 15
     
+    # Step 6: Start monitoring stack (optional but recommended)
+    print_color $BLUE "🚀 Starting monitoring stack (Grafana + Prometheus)..."
+    start_service "monitoring" || print_color $YELLOW "⚠️  Monitoring stack failed to start (optional)"
+    
     # Final status
     show_access_info "$tunnel_url"
     
@@ -290,7 +299,7 @@ case "${1:-start}" in
         ;;
     "status")
         print_color $BLUE "📊 Service Status:"
-        docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" | grep -E "(traefik|cloudflared|n8n|watchtower)" || echo "No services running"
+        docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" | grep -E "(traefik|cloudflared|n8n|watchtower|grafana|prometheus)" || echo "No services running"
         ;;
     "url")
         tunnel_url=$(get_tunnel_url)

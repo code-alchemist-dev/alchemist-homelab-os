@@ -5,6 +5,82 @@ All notable changes to Alchemist Homelab OS will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2025-11-04
+
+### 🎉 Feature Release: Enterprise Monitoring Stack & Enhanced Automation
+
+This release adds comprehensive monitoring capabilities with Grafana + Prometheus stack and completes the automation platform with Watchtower integration.
+
+### ✨ Added
+
+#### 📊 Complete Monitoring Stack
+- **Grafana Dashboard Platform** - Visual metrics dashboard and alerting interface
+- **Prometheus Time-Series Database** - Metrics collection and storage with 15-day retention
+- **Node Exporter** - System metrics (CPU, memory, disk, network, load)
+- **cAdvisor** - Docker container resource monitoring and performance metrics
+- **Pre-configured Targets** - Automatic discovery of all homelab services
+- **Port Mappings** - Direct access via localhost:3000 (Grafana) and localhost:9090 (Prometheus)
+
+#### 🤖 Advanced Automation Features  
+- **Watchtower Auto-Updater** - Daily container updates at 4:00 AM UTC
+- **Intelligent Tunnel Monitoring** - Automatic URL synchronization when Cloudflare restarts
+- **Background Monitoring Scripts** - Zero-maintenance URL change detection
+- **Health-Aware Updates** - Service health checks during container updates
+
+#### 🛠️ Enhanced Management Tools
+- **Monitoring Service Management** - Full integration with existing management scripts
+- **Master Orchestration** - Monitoring services included in main docker-compose.yml
+- **Centralized Configuration** - All monitoring variables in main .env file
+- **Intelligent Startup** - Optional monitoring stack startup in stack.sh
+
+### 🔧 Changed
+
+#### Service Architecture Updates
+- **Master docker-compose.yml** - Added complete monitoring stack integration
+- **Stack startup script** - Enhanced with optional monitoring stack startup
+- **Service management** - Updated all scripts to support monitoring operations
+- **Status displays** - Include monitoring services in status reports
+
+#### Configuration Management
+- **Environment Variables** - Added comprehensive monitoring configuration to .env.example
+- **Port Mappings** - Direct localhost access for Grafana and Prometheus
+- **Network Integration** - Monitoring services properly integrated with web network
+- **Traefik Integration** - Optional reverse proxy routing for monitoring services
+
+### 📊 Monitoring Capabilities
+
+#### System Metrics
+- **CPU Usage**: Real-time and historical CPU utilization across all cores
+- **Memory Usage**: RAM consumption, swap usage, available memory
+- **Disk I/O**: Read/write operations, disk space utilization, filesystem metrics
+- **Network Traffic**: Interface statistics, bandwidth utilization, packet metrics
+- **System Load**: Load averages, process counts, uptime tracking
+
+#### Container Metrics
+- **Resource Usage**: Per-container CPU, memory, network, and disk usage
+- **Performance Monitoring**: Container restart counts, health status, resource limits
+- **Service Discovery**: Automatic monitoring of all homelab containers
+- **Historical Trends**: Container performance over time with alerting capabilities
+
+#### Application Metrics
+- **Prometheus Self-Monitoring**: Query performance, storage metrics, rule evaluation
+- **Service Health**: HTTP endpoint monitoring, response time tracking
+- **Custom Metrics**: Extensible framework for application-specific metrics
+
+### 🚀 New Access Points
+- **Grafana Dashboard**: http://localhost:3000 (admin/admin)
+- **Prometheus Interface**: http://localhost:9090
+- **System Metrics**: Real-time system and container monitoring
+- **Historical Data**: 15-day retention for trend analysis and capacity planning
+
+### 📚 Documentation Updates
+- **Comprehensive README** - Updated with monitoring stack information
+- **Service Documentation** - Detailed monitoring setup and configuration guide
+- **Dashboard Import Guide** - Instructions for importing community dashboards
+- **Troubleshooting Section** - Common issues and resolution steps
+
+---
+
 ## [2.0.0] - 2025-11-04
 
 ### 🎉 Major Release: Centralized Configuration & Intelligent Dependency Management

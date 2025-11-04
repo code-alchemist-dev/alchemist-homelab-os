@@ -69,13 +69,16 @@ All service configuration lives in **one place** - the root `.env` file. No more
 | **Traefik** | 🔄 Proxy | Multi-port reverse proxy (80, 88, 443, 8443, 8080) | ✅ Active |
 | **Cloudflared** | 🌐 Tunnel | Zero-config secure external access | ✅ Active |
 | **n8n** | 🤖 Automation | Visual workflow automation platform | ✅ Active |
+| **Watchtower** | 🔄 Maintenance | Automatic container updates | ✅ Active |
+| **Grafana** | 📊 Monitoring | Metrics dashboard and visualization | ✅ Active |
+| **Prometheus** | 📈 Monitoring | Time-series metrics collection | ✅ Active |
 
-### � **Coming Soon** 
+### 🎯 **Coming Soon** 
 Easily add with: `./scripts/new-service.sh <category> <name>`
 
 | Category | Services | Purpose |
 |----------|----------|---------|
-| **📊 Monitoring** | Grafana, Prometheus, Uptime Kuma | System observability & alerting |
+| **📊 Monitoring** | Uptime Kuma, Netdata, AlertManager | Additional monitoring & alerting |
 | **💾 Storage** | Nextcloud, MinIO, PostgreSQL | File storage & databases |
 | **🎬 Media** | Plex, Jellyfin, Sonarr, Radarr | Entertainment & media management |
 | **🔒 Security** | Authelia, Vaultwarden, Keycloak | Authentication & security |
@@ -208,6 +211,13 @@ docker compose --env-file .env up -d
 ### 📊 **System Monitoring**
 
 ```bash
+# Start monitoring stack (Grafana + Prometheus)
+./scripts/manage.sh start monitoring
+
+# Access monitoring dashboards
+# Grafana: http://localhost:3000 (admin/admin)
+# Prometheus: http://localhost:9090
+
 # View all container status
 docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
 
@@ -218,6 +228,8 @@ docker stats
 docker logs traefik
 docker logs cloudflared-tunnel  
 docker logs n8n
+docker logs grafana
+docker logs prometheus
 
 # Follow logs in real-time
 docker logs -f n8n
@@ -236,7 +248,7 @@ nano .env
 grep -v '^#' .env | grep -v '^$'
 ```
 
-## 🌐 Access Points
+### 🌐 Access Points
 
 ### 🌍 **External Access** (via Cloudflare Tunnel)
 - **🤖 n8n Interface**: `https://your-tunnel-url.trycloudflare.com`
@@ -247,6 +259,8 @@ grep -v '^#' .env | grep -v '^$'
 ### 🏠 **Local Access**
 - **🤖 n8n**: `http://localhost` (routed via Traefik)
 - **📊 Traefik Dashboard**: `http://localhost:8080`
+- **📊 Grafana Dashboard**: `http://localhost:3000`
+- **📈 Prometheus**: `http://localhost:9090`
 
 ### 🔌 **Multi-Port Support** 
 Traefik supports multiple entry points for flexibility:
