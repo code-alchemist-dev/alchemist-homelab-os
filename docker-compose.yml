@@ -55,6 +55,43 @@ services:
       - "homelab.description=Automatic container updates"
       - "com.centurylinklabs.watchtower.enable=true"
 
+  # === MONITORING STACK ===
+  grafana:
+    extends:
+      file: ./services/monitoring/grafana-stack/docker-compose.yml
+      service: grafana
+    labels:
+      - "homelab.service=grafana"
+      - "homelab.category=monitoring"
+      - "homelab.description=Metrics dashboard and visualization"
+
+  prometheus:
+    extends:
+      file: ./services/monitoring/grafana-stack/docker-compose.yml
+      service: prometheus
+    labels:
+      - "homelab.service=prometheus"
+      - "homelab.category=monitoring"
+      - "homelab.description=Time-series metrics collection"
+
+  node-exporter:
+    extends:
+      file: ./services/monitoring/grafana-stack/docker-compose.yml
+      service: node-exporter
+    labels:
+      - "homelab.service=node-exporter"
+      - "homelab.category=monitoring"
+      - "homelab.description=System metrics exporter"
+
+  cadvisor:
+    extends:
+      file: ./services/monitoring/grafana-stack/docker-compose.yml
+      service: cadvisor
+    labels:
+      - "homelab.service=cadvisor"
+      - "homelab.category=monitoring"
+      - "homelab.description=Container metrics exporter"
+
 networks:
   web:
     external: true
