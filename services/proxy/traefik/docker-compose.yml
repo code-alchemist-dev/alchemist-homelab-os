@@ -1,24 +1,28 @@
 services:
   traefik:
-    image: traefik:latest
-    container_name: traefik
+    image: ${TRAEFIK_IMAGE:-traefik:latest}
+    container_name: ${TRAEFIK_CONTAINER_NAME:-traefik}
     command:
-      - --api.dashboard=true
-      - --api.insecure=true
-      - --providers.docker=true
-      - --providers.docker.exposedbydefault=false
-      - --providers.docker.network=web
-      - --entrypoints.web.address=:80
-      - --entrypoints.websecure.address=:443
-      - --log.level=INFO
+      - --api.dashboard=${TRAEFIK_API_DASHBOARD:-true}
+      - --api.insecure=${TRAEFIK_API_INSECURE:-true}
+      - --providers.docker=${TRAEFIK_PROVIDERS_DOCKER:-true}
+      - --providers.docker.exposedbydefault=${TRAEFIK_PROVIDERS_DOCKER_EXPOSEDBYDEFAULT:-false}
+      - --providers.docker.network=${EXTERNAL_NETWORK:-web}
+      - --entrypoints.web.address=:${TRAEFIK_ENTRYPOINTS_WEB_PORT:-80}
+      - --entrypoints.websecure.address=:${TRAEFIK_ENTRYPOINTS_WEBSECURE_PORT:-443}
+      - --entrypoints.alt-http.address=:${TRAEFIK_ENTRYPOINTS_ALT_HTTP_PORT:-88}
+      - --entrypoints.alt-https.address=:${TRAEFIK_ENTRYPOINTS_ALT_HTTPS_PORT:-8443}
+      - --log.level=${TRAEFIK_LOG_LEVEL:-INFO}
     ports:
-      - "80:80"
-      - "443:443"
-      - "8080:8080"  # Dashboard
+      - "${TRAEFIK_ENTRYPOINTS_WEB_PORT:-80}:80"
+      - "${TRAEFIK_ENTRYPOINTS_WEBSECURE_PORT:-443}:443"
+      - "${TRAEFIK_ENTRYPOINTS_ALT_HTTP_PORT:-88}:88"
+      - "${TRAEFIK_ENTRYPOINTS_ALT_HTTPS_PORT:-8443}:8443"
+      - "${TRAEFIK_ENTRYPOINTS_TRAEFIK_PORT:-8080}:8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
-      - web
+      - ${EXTERNAL_NETWORK:-web}
     restart: unless-stopped
 
 networks:

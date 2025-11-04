@@ -1,10 +1,10 @@
 services:
   cloudflared:
-    image: cloudflare/cloudflared:latest
-    container_name: cloudflared-tunnel
-    command: tunnel --url http://traefik:80
+    image: ${CLOUDFLARED_IMAGE:-cloudflare/cloudflared:latest}
+    container_name: ${CLOUDFLARED_CONTAINER_NAME:-cloudflared-tunnel}
+    command: tunnel --url http://${CLOUDFLARED_TARGET:-traefik:80}
     networks:
-      - web
+      - ${EXTERNAL_NETWORK:-web}
     restart: unless-stopped
 
 networks:

@@ -68,13 +68,11 @@ start_services() {
     
     case $service in
         "all")
-            print_color $BLUE "Starting all services..."
-            start_service "traefik"
-            sleep 2
-            start_service "n8n"
-            sleep 2
-            start_service "cloudflared"
-            show_tunnel_url
+            print_color $BLUE "Starting all services with intelligent dependency management..."
+            print_color $YELLOW "💡 Tip: Use './scripts/stack.sh' for advanced dependency handling"
+            cd "$SERVICES_DIR/.."
+            "$SERVICES_DIR/../scripts/stack.sh" start
+            return $?
             ;;
         "proxy")
             start_service "traefik"

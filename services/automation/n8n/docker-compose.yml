@@ -1,26 +1,36 @@
 services:
   n8n:
-    image: n8nio/n8n
-    container_name: n8n
+    image: ${N8N_IMAGE:-n8nio/n8n:latest}
+    container_name: ${N8N_CONTAINER_NAME:-n8n}
+    user: "${PUID:-1000}:${PGID:-1000}"
     environment:
-      - N8N_LOG_LEVEL=info
-      - GENERIC_TIMEZONE=Africa/Johannesburg
-      - TZ=Africa/Johannesburg
-      - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
-      - N8N_RUNNERS_ENABLED=true
-      - N8N_SECURE_COOKIE=false
-      - N8N_EDITOR_BASE_URL=https://dark-universe-chronic-waiting.trycloudflare.com/
-      - WEBHOOK_URL=https://dark-universe-chronic-waiting.trycloudflare.com/
+      - N8N_LOG_LEVEL=${N8N_LOG_LEVEL:-info}
+      - GENERIC_TIMEZONE=${TIMEZONE:-UTC}
+      - TZ=${TIMEZONE:-UTC}
+      - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=${N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS:-false}
+      - N8N_RUNNERS_ENABLED=${N8N_RUNNERS_ENABLED:-true}
+      - N8N_SECURE_COOKIE=${N8N_SECURE_COOKIE:-false}
+      - N8N_TRUST_PROXY=${N8N_TRUST_PROXY:-true}
+      - N8N_DISABLE_PRODUCTION_MAIN_PROCESS=${N8N_DISABLE_PRODUCTION_MAIN_PROCESS:-false}
+      - N8N_BLOCK_ENV_ACCESS_IN_NODE=${N8N_BLOCK_ENV_ACCESS_IN_NODE:-false}
+      - N8N_GIT_NODE_DISABLE_BARE_REPOS=${N8N_GIT_NODE_DISABLE_BARE_REPOS:-true}
+      - DB_SQLITE_POOL_SIZE=${DB_SQLITE_POOL_SIZE:-3}
+      - N8N_EDITOR_BASE_URL=${N8N_EDITOR_BASE_URL}
+      - WEBHOOK_URL=${N8N_WEBHOOK_URL}
+      - N8N_PAYLOAD_SIZE_MAX=${N8N_PAYLOAD_SIZE_MAX:-16}
+      - N8N_METRICS=${N8N_METRICS:-false}
+      - N8N_BINARY_DATA_MODE=${N8N_BINARY_DATA_MODE:-filesystem}
+      - N8N_DEFAULT_BINARY_DATA_MODE=${N8N_DEFAULT_BINARY_DATA_MODE:-filesystem}
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ./n8n_data:/home/node/.n8n
     networks:
-      - web
+      - ${EXTERNAL_NETWORK:-web}
     labels:
-      - traefik.enable=true
-      - traefik.http.routers.n8n.rule=PathPrefix(`/`)
-      - traefik.http.routers.n8n.entrypoints=web
-      - traefik.http.services.n8n.loadbalancer.server.port=5678
+      - traefik.enable=${N8N_TRAEFIK_ENABLE:-true}
+      - traefik.http.routers.n8n.rule=${N8N_TRAEFIK_ROUTER_RULE:-PathPrefix(`/`)}
+      - traefik.http.routers.n8n.entrypoints=${N8N_TRAEFIK_ENTRYPOINTS:-web}
+      - traefik.http.services.n8n.loadbalancer.server.port=${N8N_TRAEFIK_SERVICE_PORT:-5678}
     restart: unless-stopped
 
 networks:

@@ -1,0 +1,49 @@
+# ===================================================================
+# ALCHEMIST HOMELAB OS - MASTER DOCKER COMPOSE
+# ===================================================================
+# This file orchestrates all services with proper dependencies
+# Use: docker compose --env-file .env up -d
+
+services:
+  # === TRAEFIK REVERSE PROXY ===
+  traefik:
+    extends:
+      file: ./services/proxy/traefik/docker-compose.yml
+      service: traefik
+    labels:
+      - "homelab.service=traefik"
+      - "homelab.category=proxy"
+      - "homelab.description=Reverse proxy and load balancer"
+
+  # === CLOUDFLARE TUNNEL ===
+  cloudflared:
+    extends:
+      file: ./services/proxy/cloudflared/docker-compose.yml
+      service: cloudflared
+    depends_on:
+      traefik:
+        condition: service_started
+    labels:
+      - "homelab.service=cloudflared"
+      - "homelab.category=proxy"
+      - "homelab.description=Secure tunnel for external access"
+
+  # === N8N WORKFLOW AUTOMATION ===
+  n8n:
+    extends:
+      file: ./services/automation/n8n/docker-compose.yml
+      service: n8n
+    depends_on:
+      traefik:
+        condition: service_started
+      cloudflared:
+        condition: service_started
+    labels:
+      - "homelab.service=n8n"
+      - "homelab.category=automation"
+      - "homelab.description=Workflow automation platform"
+
+networks:
+  web:
+    external: true
+    name: ${EXTERNAL_NETWORK:-web}

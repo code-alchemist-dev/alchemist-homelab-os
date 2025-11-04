@@ -1,22 +1,20 @@
 # Alchemist Homelab OS
 # Self-hosted services and automation platform
 
-# Service Categories
-services/
-├── automation/     # Workflow and automation tools (n8n, Home Assistant, etc.)
-├── proxy/         # Reverse proxies and tunnels (Traefik, Cloudflared, etc.)
-├── monitoring/    # Monitoring and observability (Grafana, Prometheus, etc.)
-├── storage/       # Storage and databases (PostgreSQL, Redis, etc.)
-├── media/         # Media servers and streaming (Plex, Jellyfin, etc.)
-└── security/      # Security and authentication (Authelia, Keycloak, etc.)
-
 # Configuration Files
-*.env
+.env
 *.env.local
 *.env.prod
 config/
 secrets/
 certs/
+
+# Service-specific env files (keep templates)
+services/*/.env
+
+# Keep example files
+!.env.example
+!*.env.template
 
 # Data Directories
 *_data/
