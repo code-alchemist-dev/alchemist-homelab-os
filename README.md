@@ -31,6 +31,7 @@ graph LR
 - **🌐 Cloudflare Tunnel**: Zero-config secure HTTPS access (no port forwarding)
 - **🔄 Traefik**: Intelligent reverse proxy with auto-discovery  
 - **🤖 n8n**: Visual workflow automation platform
+- **💾 PostgreSQL**: Reliable database for all applications
 - **⚙️ Centralized Config**: Single `.env` file for all services
 - **🧠 Smart Startup**: Automatic dependency resolution and URL assignment
 
@@ -46,10 +47,12 @@ alchemist-homelab-os/
 │   │   └── cloudflared/       # Secure tunnel (no port forwarding)
 │   ├── automation/
 │   │   └── n8n/               # Visual workflow automation
-│   ├── monitoring/            # 📊 Observability stack (coming soon)
-│   ├── storage/               # 💾 Data persistence services  
-│   ├── media/                 # 🎬 Entertainment services
-│   └── security/              # 🔒 Authentication & security
+│   ├── monitoring/            # 📊 Grafana + Prometheus stack
+│   ├── storage/               # 💾 PostgreSQL database
+│   ├── ai/                    # 🤖 Ollama local AI
+│   ├── maintenance/           # 🔄 Watchtower auto-updater
+│   ├── media/                 # 🎬 Entertainment services (optional)
+│   └── security/              # 🔒 Authentication services (optional)
 ├── scripts/
 │   ├── stack.sh               # 🧠 Intelligent startup manager
 │   ├── manage.sh              # 🛠️ Service management utilities
@@ -72,14 +75,16 @@ All service configuration lives in **one place** - the root `.env` file. No more
 | **Watchtower** | 🔄 Maintenance | Automatic container updates | ✅ Active |
 | **Grafana** | 📊 Monitoring | Metrics dashboard and visualization | ✅ Active |
 | **Prometheus** | 📈 Monitoring | Time-series metrics collection | ✅ Active |
+| **PostgreSQL** | 💾 Storage | Reliable relational database server | ✅ Active |
+| **Ollama** | 🤖 AI | Local AI API for LLM models | ✅ Active |
 
-### 🎯 **Coming Soon** 
+### 🎯 **Optional Services** 
 Easily add with: `./scripts/new-service.sh <category> <name>`
 
 | Category | Services | Purpose |
 |----------|----------|---------|
 | **📊 Monitoring** | Uptime Kuma, Netdata, AlertManager | Additional monitoring & alerting |
-| **💾 Storage** | Nextcloud, MinIO, PostgreSQL | File storage & databases |
+| **💾 Storage** | Nextcloud, MinIO, Redis | File storage & caching |
 | **🎬 Media** | Plex, Jellyfin, Sonarr, Radarr | Entertainment & media management |
 | **🔒 Security** | Authelia, Vaultwarden, Keycloak | Authentication & security |
 
@@ -261,6 +266,7 @@ grep -v '^#' .env | grep -v '^$'
 - **📊 Traefik Dashboard**: `http://localhost:8080`
 - **📊 Grafana Dashboard**: `http://localhost:3000`
 - **📈 Prometheus**: `http://localhost:9090`
+- **💾 PostgreSQL**: `localhost:5432`
 
 ### 🔌 **Multi-Port Support** 
 Traefik supports multiple entry points for flexibility:
@@ -568,16 +574,40 @@ The platform automatically handles dependencies:
 
 ### 🎯 **Production Deployment**
 
+#### Security Hardening
 ```bash
-# Secure configuration for production
+# 1. Update all default passwords
+cp .env.example .env
+nano .env  # Update all passwords marked with "change_this"
+
+# 2. Secure Traefik dashboard
 sed -i 's/TRAEFIK_API_INSECURE=true/TRAEFIK_API_INSECURE=false/' .env
+
+# 3. Enable secure cookies
 sed -i 's/N8N_SECURE_COOKIE=false/N8N_SECURE_COOKIE=true/' .env
 
-# Use permanent Cloudflare tunnel (requires Cloudflare account)
-# Replace quick tunnel with named tunnel for production use
+# 4. Set production timezone
+sed -i 's/TIMEZONE=.*/TIMEZONE=Your\/Timezone/' .env
+```
 
-# Enable additional security headers
-# Add Traefik middleware for security headers in services
+#### Production Checklist
+- [ ] **Change all default passwords** in `.env`
+- [ ] **Disable Traefik dashboard** or enable authentication
+- [ ] **Use named Cloudflare tunnel** for permanent URLs
+- [ ] **Set up automated backups** for critical data
+- [ ] **Configure firewall rules** if exposing services
+- [ ] **Enable container resource limits**
+- [ ] **Set up log rotation** for large deployments
+- [ ] **Monitor disk space** and memory usage
+
+#### Named Cloudflare Tunnel (Recommended for Production)
+```bash
+# 1. Create a Cloudflare account and get your tunnel token
+# 2. Replace the quick tunnel configuration:
+sed -i 's/cloudflared tunnel --url.*/cloudflared tunnel run --token YOUR_TUNNEL_TOKEN/' services/proxy/cloudflared/docker-compose.yml
+
+# 3. Update environment with your permanent domain
+sed -i 's/CLOUDFLARED_TUNNEL_URL=.*/CLOUDFLARED_TUNNEL_URL=https://yourdomain.com/' .env
 ```
 
 ## �📝 Important Notes

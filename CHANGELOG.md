@@ -5,27 +5,33 @@ All notable changes to Alchemist Homelab OS will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.1.0] - 2025-11-04
+## [2.1.0] - 2025-11-06
 
-### 🎉 Feature Release: Enterprise Monitoring Stack & Enhanced Automation
+### 🎉 Production-Ready Release: PostgreSQL Migration & Platform Hardening
 
-This release adds comprehensive monitoring capabilities with Grafana + Prometheus stack and completes the automation platform with Watchtower integration.
+This release completes the migration from complex Supabase to reliable PostgreSQL, adds production-ready features, comprehensive documentation cleanup, and enhanced security configurations.
 
 ### ✨ Added
 
-#### 📊 Complete Monitoring Stack
-- **Grafana Dashboard Platform** - Visual metrics dashboard and alerting interface
-- **Prometheus Time-Series Database** - Metrics collection and storage with 15-day retention
-- **Node Exporter** - System metrics (CPU, memory, disk, network, load)
-- **cAdvisor** - Docker container resource monitoring and performance metrics
-- **Pre-configured Targets** - Automatic discovery of all homelab services
-- **Port Mappings** - Direct access via localhost:3000 (Grafana) and localhost:9090 (Prometheus)
+#### � PostgreSQL Database Platform
+- **PostgreSQL 15** - Reliable, production-ready database server
+- **Pre-configured Databases** - Ready for n8n, Grafana, Nextcloud, WordPress, Authentik
+- **Database Users** - Individual users with proper permissions for each application
+- **Automatic Initialization** - Database setup script with UUID extensions
+- **Health Checks** - Container health monitoring and dependency management
 
-#### 🤖 Advanced Automation Features  
-- **Watchtower Auto-Updater** - Daily container updates at 4:00 AM UTC
-- **Intelligent Tunnel Monitoring** - Automatic URL synchronization when Cloudflare restarts
-- **Background Monitoring Scripts** - Zero-maintenance URL change detection
-- **Health-Aware Updates** - Service health checks during container updates
+#### 🔒 Production Security Features
+- **Security Hardening Guide** - Comprehensive production deployment checklist
+- **Password Security** - Updated all default passwords with secure examples
+- **Named Tunnel Support** - Production-ready Cloudflare tunnel configuration
+- **Container Resource Management** - Resource limits and monitoring guidelines
+- **Network Security** - Enhanced network isolation and access controls
+
+#### 📚 Documentation Overhaul
+- **Production Deployment Guide** - Step-by-step security hardening instructions
+- **Service Integration Examples** - Database connection strings for all services
+- **Troubleshooting Improvements** - Enhanced diagnostic procedures and common solutions
+- **Clean Architecture Documentation** - Streamlined service descriptions and access points
 
 #### 🛠️ Enhanced Management Tools
 - **Monitoring Service Management** - Full integration with existing management scripts
@@ -35,43 +41,55 @@ This release adds comprehensive monitoring capabilities with Grafana + Prometheu
 
 ### 🔧 Changed
 
-#### Service Architecture Updates
-- **Master docker-compose.yml** - Added complete monitoring stack integration
-- **Stack startup script** - Enhanced with optional monitoring stack startup
-- **Service management** - Updated all scripts to support monitoring operations
-- **Status displays** - Include monitoring services in status reports
+#### Database Migration (Supabase → PostgreSQL)
+- **Simplified Architecture** - Replaced 11+ Supabase containers with single PostgreSQL container
+- **Reduced Complexity** - Eliminated complex authentication, API gateway, and multiple services
+- **Improved Reliability** - Battle-tested PostgreSQL instead of complex BaaS stack
+- **Resource Efficiency** - Significantly reduced memory and CPU usage
 
-#### Configuration Management
-- **Environment Variables** - Added comprehensive monitoring configuration to .env.example
-- **Port Mappings** - Direct localhost access for Grafana and Prometheus
-- **Network Integration** - Monitoring services properly integrated with web network
-- **Traefik Integration** - Optional reverse proxy routing for monitoring services
+#### Configuration Cleanup
+- **Environment Variables** - Removed 50+ Supabase variables, added clean PostgreSQL config
+- **Management Scripts** - Updated all scripts to support PostgreSQL instead of Supabase
+- **Documentation** - Completely updated service documentation and integration examples
+- **Service Templates** - Clean, production-ready configuration templates
 
-### 📊 Monitoring Capabilities
+#### Production Readiness
+- **Default Passwords** - Changed to secure examples with clear change instructions
+- **Version Pinning** - Updated to specific, stable container versions
+- **Error Handling** - Enhanced error handling and validation in management scripts
+- **Status Monitoring** - Improved service status reporting and health checks
 
-#### System Metrics
-- **CPU Usage**: Real-time and historical CPU utilization across all cores
-- **Memory Usage**: RAM consumption, swap usage, available memory
-- **Disk I/O**: Read/write operations, disk space utilization, filesystem metrics
-- **Network Traffic**: Interface statistics, bandwidth utilization, packet metrics
-- **System Load**: Load averages, process counts, uptime tracking
+### �️ Removed
 
-#### Container Metrics
-- **Resource Usage**: Per-container CPU, memory, network, and disk usage
-- **Performance Monitoring**: Container restart counts, health status, resource limits
-- **Service Discovery**: Automatic monitoring of all homelab containers
-- **Historical Trends**: Container performance over time with alerting capabilities
+#### Supabase Components (Complete Migration)
+- **Supabase Studio** - Dashboard interface (complex, authentication issues)
+- **Supabase Auth** - Authentication service (unnecessary complexity)
+- **Kong API Gateway** - API management layer (overengineered)
+- **PostgREST** - REST API service (unused functionality)
+- **Realtime Service** - WebSocket connections (not needed)
+- **Storage API** - File storage service (external storage preferred)
+- **Image Proxy** - Image processing (unnecessary resource usage)
+- **Edge Functions** - Serverless functions (n8n handles this)
+- **Analytics Service** - Usage analytics (privacy concerns)
+- **Vector Service** - Search capabilities (unused)
+- **Mail Service** - Email handling (external preferred)
 
-#### Application Metrics
-- **Prometheus Self-Monitoring**: Query performance, storage metrics, rule evaluation
-- **Service Health**: HTTP endpoint monitoring, response time tracking
-- **Custom Metrics**: Extensible framework for application-specific metrics
+#### Cleanup & Organization
+- **Redundant Files** - Removed test scripts, migration docs, and temporary files
+- **Outdated References** - Cleaned up all Supabase mentions in documentation
+- **Complex Dependencies** - Simplified startup dependencies and service relationships
 
-### 🚀 New Access Points
-- **Grafana Dashboard**: http://localhost:3000 (admin/admin)
-- **Prometheus Interface**: http://localhost:9090
-- **System Metrics**: Real-time system and container monitoring
-- **Historical Data**: 15-day retention for trend analysis and capacity planning
+### 💾 Database Integration Ready
+- **n8n Integration**: PostgreSQL backend instead of SQLite
+- **Grafana Integration**: Database storage for dashboards and users  
+- **Application Ready**: Pre-configured databases for common homelab applications
+- **Migration Scripts**: Initialization scripts with proper permissions and extensions
+
+### 🚀 Production Access Points
+- **PostgreSQL**: localhost:5432 (multiple databases available)
+- **Grafana Dashboard**: http://localhost:3000 (enhanced with DB storage)
+- **n8n Workflows**: Database-backed workflow storage and execution
+- **Monitoring Stack**: Database metrics and performance monitoring
 
 ### 📚 Documentation Updates
 - **Comprehensive README** - Updated with monitoring stack information

@@ -92,6 +92,9 @@ start_service() {
         "monitoring")
             service_path="$SERVICES_DIR/monitoring/grafana-stack"
             ;;
+        "postgres")
+            service_path="$SERVICES_DIR/storage/postgres"
+            ;;
         *)
             print_color $RED "❌ Unknown service: $service_name"
             return 1
@@ -226,9 +229,10 @@ show_access_info() {
     print_color $CYAN "   • Traefik Dashboard: http://localhost:8080"
     print_color $CYAN "   • Grafana Dashboard: http://localhost:3000"
     print_color $CYAN "   • Prometheus:       http://localhost:9090"
+    print_color $CYAN "   • PostgreSQL:       localhost:5432"
     echo ""
     print_color $YELLOW "📊 Service Status:"
-    docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" | grep -E "(traefik|cloudflared|n8n)" || echo "   No services running"
+    docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" | grep -E "(traefik|cloudflared|n8n|postgres)" || echo "   No services running"
     echo ""
 }
 
@@ -264,7 +268,12 @@ main() {
     start_service "watchtower"
     wait_for_service "watchtower" 15
     
-    # Step 6: Start monitoring stack (optional but recommended)
+    # Step 6: Start PostgreSQL database
+    print_color $BLUE "🚀 Starting PostgreSQL database..."
+    start_service "postgres"
+    wait_for_service "postgres" 20
+    
+    # Step 7: Start monitoring stack (optional but recommended)
     print_color $BLUE "🚀 Starting monitoring stack (Grafana + Prometheus)..."
     start_service "monitoring" || print_color $YELLOW "⚠️  Monitoring stack failed to start (optional)"
     
@@ -287,6 +296,7 @@ case "${1:-start}" in
         ;;
     "stop"|"down")
         print_color $YELLOW "🛑 Stopping all services..."
+        cd "$SERVICES_DIR/storage/postgres" && docker compose down || true
         cd "$SERVICES_DIR/automation/n8n" && docker compose down || true
         cd "$SERVICES_DIR/proxy/cloudflared" && docker compose down || true
         cd "$SERVICES_DIR/proxy/traefik" && docker compose down || true
@@ -299,7 +309,7 @@ case "${1:-start}" in
         ;;
     "status")
         print_color $BLUE "📊 Service Status:"
-        docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" | grep -E "(traefik|cloudflared|n8n|watchtower|grafana|prometheus)" || echo "No services running"
+        docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" | grep -E "(traefik|cloudflared|n8n|watchtower|grafana|prometheus|postgres)" || echo "No services running"
         ;;
     "url")
         tunnel_url=$(get_tunnel_url)

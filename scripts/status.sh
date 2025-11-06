@@ -38,6 +38,18 @@ else
     echo "├── ❌ n8n: Not running"
 fi
 
+if docker ps | grep -q "grafana.*Up"; then
+    echo "├── ✅ Grafana: http://localhost:3000"
+else
+    echo "├── ❌ Grafana: Not running"
+fi
+
+if docker ps | grep -q "postgres.*Up"; then
+    echo "├── ✅ PostgreSQL: localhost:5432"
+else
+    echo "├── ❌ PostgreSQL: Not running"
+fi
+
 if docker ps | grep -q "cloudflared.*Up"; then
     TUNNEL_URL=$(docker logs cloudflared-tunnel 2>&1 | grep "https://.*\.trycloudflare\.com" | tail -1 | grep -o "https://[^[:space:]]*" || echo "Not detected")
     echo "└── ✅ n8n (External): $TUNNEL_URL"

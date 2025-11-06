@@ -1,0 +1,35 @@
+services:
+  postgres:
+    image: ${POSTGRES_IMAGE:-postgres:15}
+    container_name: ${POSTGRES_CONTAINER_NAME:-postgres}
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-homelab}
+      POSTGRES_USER: ${POSTGRES_USER:-homelab}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init:/docker-entrypoint-initdb.d
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    networks:
+      - default
+      - ${EXTERNAL_NETWORK:-web}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-homelab} -d ${POSTGRES_DB:-homelab}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    labels:
+      - "traefik.enable=false"
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  default:
+    name: postgres_internal
+  web:
+    external: true
