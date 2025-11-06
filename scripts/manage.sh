@@ -40,6 +40,8 @@ show_usage() {
     echo "  n8n       - n8n automation"
     echo "  watchtower - Container auto-updater"
     echo "  monitoring - Grafana + Prometheus stack"
+    echo "  ollama     - Local AI API server"
+    echo "  postgres   - PostgreSQL database server"
     echo ""
     echo "Examples:"
     echo "  $SCRIPT_NAME start all"
@@ -81,7 +83,7 @@ start_services() {
             start_service "cloudflared"
             show_tunnel_url
             ;;
-        "traefik"|"n8n"|"cloudflared"|"watchtower"|"monitoring")
+        "traefik"|"n8n"|"cloudflared"|"watchtower"|"monitoring"|"ollama"|"postgres")
             start_service "$service"
             if [ "$service" = "cloudflared" ]; then
                 show_tunnel_url
@@ -116,6 +118,12 @@ start_service() {
         "monitoring")
             service_path="$SERVICES_DIR/monitoring/grafana-stack"
             ;;
+        "ollama")
+            service_path="$SERVICES_DIR/ai/ollama"
+            ;;
+        "postgres")
+            service_path="$SERVICES_DIR/storage/postgres"
+            ;;
     esac
     
     if [ -d "$service_path" ]; then
@@ -144,7 +152,7 @@ stop_services() {
             stop_service "cloudflared"
             stop_service "traefik"
             ;;
-        "traefik"|"n8n"|"cloudflared"|"watchtower"|"monitoring")
+        "traefik"|"n8n"|"cloudflared"|"watchtower"|"monitoring"|"ollama"|"postgres")
             stop_service "$service"
             ;;
         *)
@@ -176,6 +184,12 @@ stop_service() {
         "monitoring")
             service_path="$SERVICES_DIR/monitoring/grafana-stack"
             ;;
+        "ollama")
+            service_path="$SERVICES_DIR/ai/ollama"
+            ;;
+        "postgres")
+            service_path="$SERVICES_DIR/storage/postgres"
+            ;;
     esac
     
     if [ -d "$service_path" ]; then
@@ -191,7 +205,7 @@ stop_service() {
 # Show service status
 show_status() {
     print_color $BLUE "Service Status:"
-    docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" | grep -E "(traefik|n8n|cloudflared|watchtower|grafana|prometheus)" || print_color $YELLOW "No services running"
+    docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" | grep -E "(traefik|n8n|cloudflared|watchtower|grafana|prometheus|ollama|postgres)" || print_color $YELLOW "No services running"
 }
 
 # Show logs
@@ -217,6 +231,12 @@ show_logs() {
             ;;
         "prometheus")
             container_name="prometheus"
+            ;;
+        "ollama")
+            container_name="ollama"
+            ;;
+        "postgres")
+            container_name="postgres"
             ;;
         *)
             print_color $RED "Unknown service: $service"
@@ -252,8 +272,10 @@ update_services() {
             update_service "cloudflared"
             update_service "watchtower"
             update_service "monitoring"
+            update_service "ollama"
+            update_service "postgres"
             ;;
-        "traefik"|"n8n"|"cloudflared"|"watchtower"|"monitoring")
+        "traefik"|"n8n"|"cloudflared"|"watchtower"|"monitoring"|"ollama"|"postgres")
             update_service "$service"
             ;;
         *)
@@ -284,6 +306,12 @@ update_service() {
             ;;
         "monitoring")
             service_path="$SERVICES_DIR/monitoring/grafana-stack"
+            ;;
+        "ollama")
+            service_path="$SERVICES_DIR/ai/ollama"
+            ;;
+        "postgres")
+            service_path="$SERVICES_DIR/storage/postgres"
             ;;
     esac
     
